@@ -1,0 +1,35 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+.claude
+
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+CLAUDE.md
+dist
+dist-ssr
+*.local
+
+# Environment files
+.env
+.env.local
+.env.development.local
+
+# IDE files
+.vscode/
+.idea/
+
+# Cache
+.cache/
+.parcel-cache
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
