@@ -1,4 +1,5 @@
 import { usePrices } from '../hooks/usePrices'
+import { PortfolioOverview } from './PortfolioOverview'
 
 interface WalletInfoProps {
   address: string
@@ -42,6 +43,8 @@ export const WalletInfo = ({ address, balance, onDisconnect }: WalletInfoProps) 
           </div>
         </div>
       </div>
+
+      <PortfolioOverview address={address} ethBalance={balance} />
 
       {ethPrice && (
         <div className="bg-white overflow-hidden shadow rounded-lg">
