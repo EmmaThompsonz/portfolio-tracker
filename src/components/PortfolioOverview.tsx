@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { getWalletTokens, Token } from '../services/tokenService'
 import { fetchTokenPrices, TokenPrice } from '../services/priceService'
+import { PortfolioChart } from './PortfolioChart'
 
 interface PortfolioOverviewProps {
   address: string
@@ -58,13 +59,54 @@ export const PortfolioOverview = ({ address, ethBalance }: PortfolioOverviewProp
 
   const totalValue = calculateTotalValue()
 
+  const generateChartData = () => {
+    const chartData = []
+    const colors = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#06B6D4']
+    
+    // Add ETH
+    const ethPrice = prices.find(p => p.symbol === 'eth')
+    if (ethPrice) {
+      const ethValue = parseFloat(ethBalance) * ethPrice.current_price
+      if (ethValue > 0) {
+        chartData.push({
+          name: 'Ethereum',
+          symbol: 'ETH',
+          value: ethValue,
+          color: colors[0]
+        })
+      }
+    }
+
+    // Add tokens
+    tokens.forEach((token, index) => {
+      const price = prices.find(p => p.symbol === token.symbol.toLowerCase())
+      if (price) {
+        const value = parseFloat(token.balanceFormatted) * price.current_price
+        if (value > 0) {
+          chartData.push({
+            name: token.name,
+            symbol: token.symbol,
+            value,
+            color: colors[(index + 1) % colors.length]
+          })
+        }
+      }
+    })
+
+    return chartData
+  }
+
+  const chartData = generateChartData()
+
   if (loading) {
     return (
-      <div className="bg-white overflow-hidden shadow rounded-lg">
-        <div className="px-4 py-5 sm:p-6">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-gray-600">Loading portfolio...</p>
+      <div className="space-y-6">
+        <div className="bg-white overflow-hidden shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-gray-600">Loading portfolio...</p>
+            </div>
           </div>
         </div>
       </div>
@@ -72,6 +114,8 @@ export const PortfolioOverview = ({ address, ethBalance }: PortfolioOverviewProp
   }
 
   return (
+    <div className="space-y-6">
+      <PortfolioChart data={chartData} />
     <div className="bg-white overflow-hidden shadow rounded-lg">
       <div className="px-4 py-5 sm:p-6">
         <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">
@@ -153,6 +197,7 @@ export const PortfolioOverview = ({ address, ethBalance }: PortfolioOverviewProp
           )}
         </div>
       </div>
+    </div>
     </div>
   )
 }
